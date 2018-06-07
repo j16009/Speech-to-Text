@@ -14,10 +14,12 @@ public class SpeechtoText_main {
 
 	public static void main(String[] args) {
 		SpeechToText service = new SpeechToText();
-		service.setUsernameAndPassword("j16009", "j16009");
+		service.setUsernameAndPassword("02a67698-6caf-479f-b4f4-deba6b2c3509", "XyeLPW7tCXcn");
 
 		File audio = new File("audio/sample1.wav");
 		RecognizeOptions options = null;
+		MySQL mysql = new MySQL();
+		mysql.updateImage("a",0.5);
 		try {
 			options = new RecognizeOptions.Builder()
 					.model("ja-JP_BroadbandModel")
@@ -36,11 +38,16 @@ public class SpeechtoText_main {
 		try {
 			JsonNode node = mapper.readTree(s);
 
-			String tra = node.get("results").get(0).get("alternatives").get(0).get("transcript").asText();
-			System.out.println("tra : " + tra);
+			for(int i = 0; i< node.get("results").size(); i++){
 
-			Double conf = node.get("results").get(0).get("alternatives").get(0).get("confidence").asDouble();
-			System.out.println("conf : " + conf);
+				String text = node.get("results").get(i).get("alternatives").get(0).get("transcript").toString();
+				System.out.println("transcript : " + text);
+
+				Double confidence = node.get("results").get(i).get("alternatives").get(0).get("confidence").asDouble();
+				System.out.println("confidence : " + confidence);
+
+				mysql.updateImage(text, confidence);
+			}
 
 
 		} catch (IOException e) {
